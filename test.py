@@ -5,34 +5,23 @@ import tkinter
 g = Group()
 g.set_default_cube()
 
-
-print(g.get_coordinates())
-
-
-g.y_rotate(0)
-g.x_rotate(0)
-
 print(g.get_coordinates())
 
 g.set_scale(100)
-# g.set_pan(250)
-
 
 top = tkinter.Tk()
 
-C = tkinter.Canvas(top, bg="blue", height=500, width=500)
-
-i = 0
+C = tkinter.Canvas(top, bg="cyan", height=500, width=500)
 
 def do():
 	C.delete("all")
-	global i
-	i += 0.01
-	g.y_rotate(i)
-	g.x_rotate(i)
-	g.z_rotate(i)
-	for p in g.get_coordinates():
-		C.create_rectangle(p[0], p[1], list(np.array(p) + 5)[0], list(np.array(p) + 5)[1], fill="red")
+
+	g.y_rotate((g.x_angle+0.02))
+	g.x_rotate((g.y_angle+0.02))
+	g.z_rotate((g.z_angle+0.02))
+	
+	for p in g.points:
+		C.create_rectangle(p.x, p.y, p.x+5, p.y+5, fill="white")
 	
 	C.after(50, do)
 
