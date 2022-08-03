@@ -42,6 +42,14 @@ class Group:
 		for c in coor:
 			self.points.append(Point(c[0], c[1], c[2]))
 	
+	def set_scale(self, scale):
+		for p in self.points:
+			p.set_coordinates(list(np.array(p.get_coordinates()) * scale))
+	
+	def set_pan(self, scale):
+		for p in self.points:
+			p.set_coordinates(list(np.array(p.get_coordinates()) + scale))
+	
 	def add_points(self, coor):
 		coor = []
 		for c in coor:
