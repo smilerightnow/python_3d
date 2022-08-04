@@ -21,4 +21,4 @@ def draw():
 	gui.canvas.after(50, draw) ##draw every 50ms
 
 draw()
-gui.top.mainloop()
+gui.window.mainloop()

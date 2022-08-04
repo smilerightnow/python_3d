@@ -104,14 +104,14 @@ class Group:
 		
 class GUI:
 	def __init__(self, bg="cyan", height=0, width=0):		
-		self.top = tk.Tk()
-		if not height or not width:	self.top.attributes("-zoomed", True)
+		self.window = tk.Tk()
+		if not height or not width:	self.window.attributes("-zoomed", True)
 		
-		self.top.update()
-		self.height = height if height else self.top.winfo_height()
-		self.width = width if width else self.top.winfo_width()
+		self.window.update()
+		self.height = height if height else self.window.winfo_height()
+		self.width = width if width else self.window.winfo_width()
 		
-		self.canvas = tk.Canvas(self.top, bg=bg, height=self.height, width=self.width)
+		self.canvas = tk.Canvas(self.window, bg=bg, height=self.height, width=self.width)
 		self.canvas.configure(scrollregion=(-self.width/2,-self.height/2, self.width/2, self.height/2)) ##making 0 the origin
 		self.canvas.pack()
 		
