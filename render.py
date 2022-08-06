@@ -103,8 +103,12 @@ class Group:
 			)))
 		
 class GUI:
-	def __init__(self, bg="cyan", height=0, width=0):		
+	def __init__(self, group, bg="cyan", height=0, width=0):
+		self.group = group ## the 3d group
+		
 		self.window = tk.Tk()
+		self.window.winfo_toplevel().title("3D render")
+		
 		if not height or not width:	self.window.attributes("-zoomed", True)
 		
 		self.window.update()
@@ -112,22 +116,36 @@ class GUI:
 		self.width = width if width else self.window.winfo_width()
 		
 		self.canvas = tk.Canvas(self.window, bg=bg, height=self.height, width=self.width)
-		self.canvas.configure(scrollregion=(-self.width/2,-self.height/2, self.width/2, self.height/2)) ##making 0 the origin
+		self.canvas.configure(scrollregion=(-self.width/2,-self.height/2, self.width/2, self.height/2)) ##setting 0,0 in the center
 		self.canvas.pack()
-		
-		self.mouse_pressed = {"left":False, "right":False}
 
-		
+		self.mouse_pressed = {"left":False, "right":False, "middle": False}
+		self.last_mouse_pos = {"x":0, "y":0}
 		self.canvas.bind('<ButtonPress>', self.on_mouse_pressed)
 		self.canvas.bind('<ButtonRelease>', self.on_mouse_released)
 		self.canvas.bind('<Motion>', self.mouse_motion)
 
 	def on_mouse_pressed(self, event):
-		if event.num == 3: self.mouse_pressed["right"] = True ## right mouse is 3
+		## right mouse is 3, left:1, middle: 2
+		if event.num == 3: self.mouse_pressed["right"] = True
 	def on_mouse_released(self, event):
 		if event.num == 3: self.mouse_pressed["right"] = False
 	def mouse_motion(self, event):
-		if self.mouse_pressed["right"]:
-			print(event.x, event.y)
+		if self.mouse_pressed["right"]: ## move the 3d world around
+			d_x = event.x - self.last_mouse_pos["x"]
+			d_y = event.y - self.last_mouse_pos["y"]
+			
+			if abs(d_x) > 5 or abs(d_y) > 5: ## updating every 5px
+				d_x = np.sign(d_x) * 5 ## limit the number to 5
+				d_y = np.sign(d_y) * 5
+				
+				self.last_mouse_pos["x"] = event.x
+				self.last_mouse_pos["y"] = event.y
+				
+				self.group.y_rotate((self.group.y_angle-d_x/100)) ## it seems a - here and a + bottom works perfectly. nice.
+				self.group.x_rotate((self.group.x_angle+d_y/100))
+				
+				
+				###ADD middle for rotation z, left for panning
 
 	
