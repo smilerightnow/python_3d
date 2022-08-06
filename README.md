@@ -11,6 +11,6 @@ a simple 3d rendering library + simple CAD
 
 + adding some CAD functions.
 
-## Rendering Demo:
+## Rendering Demo(a 3d cube):
 
 ![Demo](/simple_demo.gif)
