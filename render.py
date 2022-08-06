@@ -130,10 +130,16 @@ class GUI:
 		self.canvas.bind('<Motion>', self.mouse_motion)
 
 	def on_mouse_pressed(self, event):
-		## right mouse is 3, left:1, middle: 2
-		if event.num == 3: self.mouse_pressed["right"] = True
-		if event.num == 2: self.mouse_pressed["middle"] = True
-		if event.num == 1: self.mouse_pressed["left"] = True
+		if event.num == 5: ##zooming out
+			self.group.set_scale(self.group.scale - 0.05)
+		
+		if event.num == 4: ##zooming in
+			self.group.set_scale(self.group.scale + 0.05)
+			
+		if event.num == 3: self.mouse_pressed["right"] = True ## move 3d world
+		if event.num == 2: self.mouse_pressed["middle"] = True ## rotate 3d world
+		if event.num == 1: self.mouse_pressed["left"] = True ## pan 3d world
+		## note: i didn't implement a camera, im modifying the 3d group coordinates directly. when exporting, i need to rotate the model to 0degrees on all axis.
 	def on_mouse_released(self, event):
 		if event.num == 3: self.mouse_pressed["right"] = False
 		if event.num == 2: self.mouse_pressed["middle"] = False
