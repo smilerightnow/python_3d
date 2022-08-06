@@ -47,9 +47,13 @@ class Group:
 		for p in self.points:
 			p.set_coordinates(list(np.array(p.get_coordinates()) * scale))
 	
-	def set_pan(self, scale):
+	def set_pan(self, x_scale, y_scale):
 		for p in self.points:
-			p.set_coordinates(list(np.array(p.get_coordinates()) + scale))
+			p.set_coordinates([
+				p.get_coordinates()[0] + x_scale,
+				p.get_coordinates()[1] + y_scale,
+				p.get_coordinates()[2]
+			])
 	
 	def add_points(self, coor):
 		coor = []
@@ -128,24 +132,43 @@ class GUI:
 	def on_mouse_pressed(self, event):
 		## right mouse is 3, left:1, middle: 2
 		if event.num == 3: self.mouse_pressed["right"] = True
+		if event.num == 2: self.mouse_pressed["middle"] = True
+		if event.num == 1: self.mouse_pressed["left"] = True
 	def on_mouse_released(self, event):
 		if event.num == 3: self.mouse_pressed["right"] = False
+		if event.num == 2: self.mouse_pressed["middle"] = False
+		if event.num == 1: self.mouse_pressed["left"] = False
 	def mouse_motion(self, event):
+		d_x = event.x - self.last_mouse_pos["x"]
+		d_y = event.y - self.last_mouse_pos["y"]
+		mouse_movement_speed = 5
+		mouse_rotation_speed = 2
+		
 		if self.mouse_pressed["right"]: ## move the 3d world around
-			d_x = event.x - self.last_mouse_pos["x"]
-			d_y = event.y - self.last_mouse_pos["y"]
-			
-			if abs(d_x) > 5 or abs(d_y) > 5: ## updating every 5px
-				d_x = np.sign(d_x) * 5 ## limit the number to 5
-				d_y = np.sign(d_y) * 5
+			if abs(d_x) > mouse_movement_speed or abs(d_y) > mouse_movement_speed: ## updating every ${mouse_movement_speed}px
+				d_x = np.sign(d_x) * mouse_movement_speed ## limit the number
+				d_y = np.sign(d_y) * mouse_movement_speed
 				
 				self.last_mouse_pos["x"] = event.x
 				self.last_mouse_pos["y"] = event.y
 				
 				self.group.y_rotate((self.group.y_angle-d_x/100)) ## it seems a - here and a + bottom works perfectly. nice.
 				self.group.x_rotate((self.group.x_angle+d_y/100))
+		
+		if self.mouse_pressed["middle"]: ## rotating the 3d world around z-axis
+			if abs(d_x) > mouse_rotation_speed or abs(d_y) > mouse_rotation_speed: ## updating every ${mouse_rotation_speed}px
+				d_x = np.sign(d_x) * mouse_rotation_speed ## limit the number
 				
+				self.last_mouse_pos["x"] = event.x
+												
+				self.group.z_rotate((self.group.z_angle-d_x/100))
+		
+		if self.mouse_pressed["left"]: ## panning the 3d world
+			if abs(d_x) > mouse_movement_speed or abs(d_y) > mouse_movement_speed: ## updating every ${mouse_movement_speed}px
+				d_x = np.sign(d_x) * mouse_movement_speed ## limit the number
+				d_y = np.sign(d_y) * mouse_movement_speed
 				
-				###ADD middle for rotation z, left for panning
-
-	
+				self.last_mouse_pos["x"] = event.x
+				self.last_mouse_pos["y"] = event.y
+				
+				self.group.set_pan(d_x, d_y)
