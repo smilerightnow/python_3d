@@ -1,7 +1,6 @@
 from render import *
 
 ###TODO:
-## move 3d model with mouse
 ## workplanes: 2d, 3d
 ## can only draw on 2d then extrude to 3d
 ## chamfer and fillet on 3d
