@@ -45,7 +45,7 @@ class Group:
 	
 	def set_scale(self, scale):
 		for p in self.points:
-			p.set_coordinates(list(np.array(p.get_coordinates()) * scale))
+			p.set_coordinates((np.array(p.get_coordinates()) * scale).tolist())
 	
 	def set_pan(self, x_scale, y_scale):
 		for p in self.points:
@@ -75,36 +75,36 @@ class Group:
 	
 	def x_rotate(self, x_angle):
 		for p in self.points:
-			p.set_coordinates(list(np.matmul(
+			p.set_coordinates(np.matmul(
 				[
 					[1.0, 0.0, 0.0],
 					[0.0, np.cos(x_angle), np.sin(x_angle)],
 					[0.0, -np.sin(x_angle), np.cos(x_angle)]
 				],
 				p.get_coordinates()
-			)))
+			).tolist())
 	
 	def y_rotate(self, y_angle):
 		for p in self.points:
-			p.set_coordinates(list(np.matmul(
+			p.set_coordinates(np.matmul(
 				[
 					[np.cos(y_angle), 0.0, -np.sin(y_angle)],
 					[0.0, 1.0, 0.0],
 					[np.sin(y_angle), 0.0, np.cos(y_angle)]
 				],
 				p.get_coordinates()
-			)))
+			).tolist())
 	
 	def z_rotate(self, z_angle):
 		for p in self.points:
-			p.set_coordinates(list(np.matmul(
+			p.set_coordinates(np.matmul(
 				[
 					[np.cos(z_angle), np.sin(z_angle), 0.0],
 					[-np.sin(z_angle), np.cos(z_angle), 0.0],
 					[0.0, 0.0, 1.0]
 				],
 				p.get_coordinates()
-			)))
+			).tolist())
 		
 class GUI:
 	def __init__(self, group, bg="cyan", height=0, width=0):
