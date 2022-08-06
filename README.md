@@ -10,6 +10,7 @@ a simple 3d rendering library + simple CAD
 ## TODO:
 
 + adding some CAD functions.
++ Removing numpy and using only built-in tools. :)
 
 ## Rendering Demo(a 3d cube):
 
