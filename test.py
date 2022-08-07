@@ -1,9 +1,9 @@
 from render import *
 
 ###CAD:
-## workplanes: 2d, 3d
-## can only draw on 2d then extrude to 3d
+## selecting points.
 ## lines/edges.
+## extrude points and lines.
 ##constraints: horizental, vertical...
 ## chamfer and fillet on 3d
 
@@ -16,8 +16,8 @@ gui = GUI(g, "cyan", 600, 600)
 def draw():
 	gui.canvas.delete("all") ##clearing the canvas before redrawing
 	
-	for p in g.points:
-		gui.canvas.create_rectangle(p.x, p.y, p.x+5, p.y+5, fill="white") ##drawing points
+	for p in sorted(g.points, key=lambda x:x.selected):
+		gui.canvas.create_rectangle(p.x, p.y, p.x+gui.settings["points_width"], p.y+gui.settings["points_width"], fill="red" if p.selected else "white") ##drawing points
 		
 	gui.canvas.after(50, draw) ##draw every 50ms
 
