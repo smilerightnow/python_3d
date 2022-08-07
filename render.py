@@ -107,17 +107,17 @@ class Group:
 			).tolist())
 		
 class GUI:
-	def __init__(self, group, bg="cyan", height=0, width=0):
+	def __init__(self, group, bg="cyan", height=0, width=0, fullscreen=False):
 		self.group = group ## the 3d group
 		
 		self.window = tk.Tk()
 		self.window.winfo_toplevel().title("3D render")
 		
-		if not height or not width:	self.window.attributes("-zoomed", True)
+		if fullscreen: self.window.attributes("-zoomed", True)
 		
 		self.window.update()
-		self.height = height if height else self.window.winfo_height()
-		self.width = width if width else self.window.winfo_width()
+		self.height = height if height and not fullscreen else self.window.winfo_height()
+		self.width = width if width and not fullscreen else self.window.winfo_width()
 		
 		self.canvas = tk.Canvas(self.window, bg=bg, height=self.height, width=self.width)
 		self.canvas.configure(scrollregion=(-self.width/2,-self.height/2, self.width/2, self.height/2)) ##setting 0,0 in the center

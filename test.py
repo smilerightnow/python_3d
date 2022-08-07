@@ -11,7 +11,7 @@ g = Group()
 g.set_default_cube()
 g.set_scale(100)
 
-gui = GUI(g, "cyan", 600, 600)
+gui = GUI(g, "cyan", 600, 600, True)
 
 def draw():
 	gui.canvas.delete("all") ##clearing the canvas before redrawing
@@ -23,3 +23,7 @@ def draw():
 
 draw()
 gui.window.mainloop()
+
+
+###TOFIX:
+## make the model rotate/move relative to its center. this is a problem when a model is not in the center of the screen.
