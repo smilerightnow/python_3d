@@ -122,7 +122,11 @@ class GUI:
 		self.canvas = tk.Canvas(self.window, bg=bg, height=self.height, width=self.width)
 		self.canvas.configure(scrollregion=(-self.width/2,-self.height/2, self.width/2, self.height/2)) ##setting 0,0 in the center
 		self.canvas.pack()
-
+		
+		###KEYBOARD
+		self.window.bind('<KeyPress>', self.key_commands)
+		
+		###MOUSE
 		self.mouse_pressed = {"left":False, "right":False, "middle": False}
 		self.last_mouse_pos = {"x":0, "y":0}
 		self.canvas.bind('<ButtonPress>', self.on_mouse_pressed)
@@ -178,3 +182,7 @@ class GUI:
 				self.last_mouse_pos["y"] = event.y
 				
 				self.group.set_pan(d_x, d_y)
+	
+	def key_commands(self, event):
+		print("ok")
+		print(event)
