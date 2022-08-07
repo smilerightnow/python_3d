@@ -3,6 +3,8 @@ from render import *
 ###CAD:
 ## workplanes: 2d, 3d
 ## can only draw on 2d then extrude to 3d
+## lines/edges.
+##constraints: horizental, vertical...
 ## chamfer and fillet on 3d
 
 g = Group()
