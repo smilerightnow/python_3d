@@ -1,7 +1,6 @@
 from render import *
 
 ###CAD:
-## lines/edges.
 ## extrude points and lines.
 ##constraints: horizental, vertical...
 ## chamfer and fillet on 3d
@@ -13,9 +12,12 @@ gui = GUI(g, "cyan", 600, 600)
 
 def draw():
 	gui.canvas.delete("all") ##clearing the canvas before redrawing
+
+	for p in sorted(g.points, key=lambda x:x.selected): ##drawing points
+		gui.canvas.create_rectangle(p.x, p.y, p.x+gui.settings["points_width"], p.y+gui.settings["points_width"], fill="red" if p.selected else "white")
 	
-	for p in sorted(g.points, key=lambda x:x.selected):
-		gui.canvas.create_rectangle(p.x, p.y, p.x+gui.settings["points_width"], p.y+gui.settings["points_width"], fill="red" if p.selected else "white") ##drawing points
+	for e in g.edges: ##drawing edges
+		gui.canvas.create_line(e[0].x, e[0].y, e[1].x, e[1].y, fill="#2e2e2e", width=2)
 			
 	gui.canvas.after(50, draw) ##draw every 50ms
 

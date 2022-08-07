@@ -27,7 +27,7 @@ class Group:
 		self.points = points
 		self.edges = []
 	
-	def set_default_cube(self):
+	def set_default_cube(self): ## this is just a function that draws a cube. 
 		coor = [
 				[1., 1., 1.],
 				[-1., 1., 1.],
@@ -42,6 +42,21 @@ class Group:
 			self.points.append(Point(c[0], c[1], c[2]))
 		
 		self.set_scale(100)
+				
+		self.edges.extend([
+			[self.points[2], self.points[6]],
+			[self.points[3], self.points[7]],
+			[self.points[2], self.points[3]],
+			[self.points[6], self.points[7]],
+			[self.points[0], self.points[3]],
+			[self.points[4], self.points[7]],
+			[self.points[0], self.points[4]],
+			[self.points[0], self.points[1]],
+			[self.points[1], self.points[5]],
+			[self.points[1], self.points[2]],
+			[self.points[5], self.points[6]],
+			[self.points[4], self.points[5]]
+		])
 	
 	def set_scale(self, scale):
 		for p in self.points:
@@ -75,11 +90,15 @@ class Group:
 	
 	def get_selected_points(self): ## add in the future: selected edges, faces.
 		selected_points = []
-		for i, p in enumerate(self.points):
+		for p in self.points:
 			if p.selected:
-				selected_points.append([i, p])
-		
+				selected_points.append(p)
 		return selected_points
+	
+	def clear_selection(self):
+		for p in self.points:
+			if p.selected:
+				p.selected = False
 	
 	def x_rotate(self, x_angle):
 		for p in self.points:
@@ -159,16 +178,18 @@ class GUI:
 		if event.num == 1:
 			self.mouse_pressed["left"] = True ## pan 3d world
 			
+			selected_something = False
 			for p in self.group.points: ##select point
 				scrolled_x = int(event.x-self.width/2) ## moving x because origin is center, not top left
 				scrolled_y = int(event.y-self.height/2)
 												
 				if scrolled_x in list(range(int(p.x), int(p.x)+self.settings["points_width"]+10)) and scrolled_y in list(range(int(p.y), int(p.y)+self.settings["points_width"]+10)):
 					p.selected = not p.selected
-					break
+					selected_something = True
+					break ## selecting the first point and stop. don't select two points at the same time.
+			if not selected_something:
+				self.group.clear_selection()
 
-		
-		## note: i didn't implement a camera, im modifying the 3d group coordinates directly. when exporting, i need to rotate the model to 0degrees on all axis.
 	def on_mouse_released(self, event):
 		if event.num == 3: self.mouse_pressed["right"] = False
 		if event.num == 2: self.mouse_pressed["middle"] = False
@@ -210,8 +231,7 @@ class GUI:
 					self.group.set_pan(d_x, d_y)
 	
 	def key_commands(self, event):
-		print(event)
-		
+		# print(event)
 		if event.state == 20 and event.keycode == 24: ## if ctrl+a ## select all
 			self.select_all = not self.select_all
 			for p in self.group.points:
@@ -219,4 +239,7 @@ class GUI:
 		if event.char == "p": ## add a point
 			pass
 		if event.char == "l": ## add a line when selecting two points
-			pass
+			selected_points = self.group.get_selected_points()
+			if len(selected_points) == 2:
+				self.group.edges.append(selected_points)
+			self.group.clear_selection()
