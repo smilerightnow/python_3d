@@ -23,12 +23,9 @@ class Point:
 		self.z += z
 
 class Group:
-	def __init__(self, points=[], scale=1.0, x_angle=0.0, y_angle=0.0, z_angle=0.0):
+	def __init__(self, points=[]):
 		self.points = points
-		self.scale = scale
-		self.x_angle = x_angle
-		self.y_angle = y_angle
-		self.z_angle = z_angle
+		self.edges = []
 	
 	def set_default_cube(self):
 		coor = [
@@ -43,6 +40,8 @@ class Group:
 			]
 		for c in coor:
 			self.points.append(Point(c[0], c[1], c[2]))
+		
+		self.set_scale(100)
 	
 	def set_scale(self, scale):
 		for p in self.points:
@@ -73,6 +72,14 @@ class Group:
 			coor.append(p.get_coordinates())
 		
 		return coor
+	
+	def get_selected_points(self): ## add in the future: selected edges, faces.
+		selected_points = []
+		for i, p in enumerate(self.points):
+			if p.selected:
+				selected_points.append([i, p])
+		
+		return selected_points
 	
 	def x_rotate(self, x_angle):
 		for p in self.points:
@@ -141,10 +148,10 @@ class GUI:
 
 	def on_mouse_pressed(self, event):
 		if event.num == 5: ##zooming out
-			self.group.set_scale(self.group.scale - 0.05)
+			self.group.set_scale(1-0.05)
 		
 		if event.num == 4: ##zooming in
-			self.group.set_scale(self.group.scale + 0.05)
+			self.group.set_scale(1+0.05)
 			
 		if event.num == 3: self.mouse_pressed["right"] = True ## move 3d world
 		if event.num == 2: self.mouse_pressed["middle"] = True ## rotate 3d world
@@ -181,8 +188,8 @@ class GUI:
 					self.last_mouse_pos["x"] = event.x
 					self.last_mouse_pos["y"] = event.y
 					
-					self.group.y_rotate((self.group.y_angle-d_x/100)) ## it seems a - here and a + bottom works perfectly. nice.
-					self.group.x_rotate((self.group.x_angle+d_y/100))
+					self.group.y_rotate(-d_x/100) ## it seems a - here and a + bottom works perfectly. nice.
+					self.group.x_rotate(+d_y/100)
 			
 			if self.mouse_pressed["middle"]: ## rotating the 3d world around z-axis
 				if abs(d_x) > mouse_rotation_speed or abs(d_y) > mouse_rotation_speed: ## updating every ${mouse_rotation_speed}px
@@ -190,7 +197,7 @@ class GUI:
 					
 					self.last_mouse_pos["x"] = event.x
 													
-					self.group.z_rotate((self.group.z_angle-d_x/100))
+					self.group.z_rotate(-d_x/100)
 			
 			if self.mouse_pressed["left"]: ## panning the 3d world
 				if abs(d_x) > mouse_movement_speed or abs(d_y) > mouse_movement_speed: ## updating every ${mouse_movement_speed}px
