@@ -5,6 +5,7 @@ a simple 3d rendering library + simple CAD
 
 + Projection of 3D coordinates to 2D window. 
 + Using the mouse to zoom, pan, rotate on all 3 axis.
++ Selectable points.
 + Simplifying the code as much as possible. Currently, using only tkinter+numpy.
 
 ## TODO:
