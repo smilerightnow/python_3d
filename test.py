@@ -1,29 +1,33 @@
-from render import *
+def line(x0, y0, x1, y1):
+	"Bresenham's line algorithm"
+	points_in_line = []
+	dx = abs(x1 - x0)
+	dy = abs(y1 - y0)
+	x, y = x0, y0
+	sx = -1 if x0 > x1 else 1
+	sy = -1 if y0 > y1 else 1
+	if dx > dy:
+		err = dx / 2.0
+		while x != x1:
+			points_in_line.append((x, y))
+			err -= dy
+			if err < 0:
+				y += sy
+				err += dx
+			x += sx
+	else:
+		err = dy / 2.0
+		while y != y1:
+			points_in_line.append((x, y))
+			err -= dx
+			if err < 0:
+				x += sx
+				err += dy
+			y += sy
+	points_in_line.append((x, y))
+	return points_in_line
 
-###CAD:
-## extrude points and lines.
-##constraints: horizental, vertical...
-## chamfer and fillet on 3d
 
-g = Group()
-g.set_default_cube()
+a = line(0, 5, 5, 5)
 
-gui = GUI(g, "cyan", 600, 600)
-
-def draw():
-	gui.canvas.delete("all") ##clearing the canvas before redrawing
-
-	for p in sorted(g.points, key=lambda x:x.selected): ##drawing points
-		gui.canvas.create_rectangle(p.x, p.y, p.x+gui.settings["points_width"], p.y+gui.settings["points_width"], fill="red" if p.selected else "white")
-	
-	for e in g.edges: ##drawing edges
-		gui.canvas.create_line(e[0].x, e[0].y, e[1].x, e[1].y, fill="#2e2e2e", width=2, smooth=True)
-			
-	gui.canvas.after(50, draw) ##draw every 50ms
-
-draw()
-gui.window.mainloop()
-
-
-###TOFIX:
-## make the model rotate/move relative to its center. this is a problem when a model has been moved/panned (is not in the center) of the screen.
+print(a)
