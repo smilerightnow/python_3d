@@ -29,56 +29,11 @@ class Edge:
 		self.p2 = two_points[1]
 		self.selected = False
 	
-	def get_pixels_path(self):
-		path = {"x":[], "y":[]}
-		
-		x0 = int(self.p1.x)
-		x1 = int(self.p2.x)
-		y0 = int(self.p1.y)
-		y1 = int(self.p2.y)
-		
-		"Bresenham's line algorithm, found on rosettacode and stackoverflow, modified for my needs"
-		dx = abs(x1 - x0)
-		dy = abs(y1 - y0)
-		x, y = x0, y0
-		sx = -1 if x0 > x1 else 1
-		sy = -1 if y0 > y1 else 1
-		if dx > dy:
-			err = dx / 2.0
-			while x != x1:
-				path["x"].append(x)
-				path["y"].append(y)
-				err -= dy
-				if err < 0:
-					y += sy
-					err += dx
-				x += sx
-		else:
-			err = dy / 2.0
-			while y != y1:
-				path["x"].append(x)
-				path["y"].append(y)
-				err -= dx
-				if err < 0:
-					x += sx
-					err += dy
-				y += sy
-		
-		path["x"].append(x)
-		path["y"].append(y)
-		
-		## adding a margin from each side
-		min_x, max_x = min(path["x"]), max(path["x"])
-		min_y, max_y = min(path["y"]), max(path["y"])
-		
-		for i in range(1, 5): ## 4 seems like a nice margin
-			path["x"].append(min_x-i)
-			path["x"].append(max_x+i)
-			path["y"].append(min_y-i)
-			path["y"].append(max_y+i)
-		
-		return path
-
+	def chamfer(self):
+		pass
+	
+	def fillet(self):
+		pass
 
 class Group:
 	def __init__(self):
@@ -218,7 +173,6 @@ class GUI:
 		self.canvas.configure(scrollregion=(-self.width/2,-self.height/2, self.width/2, self.height/2)) ##setting 0,0 in the center
 		self.canvas.pack()
 		
-		self.mouse_lock = False
 		self.select_all = False
 		
 		###KEYBOARD
@@ -253,12 +207,23 @@ class GUI:
 					selected_something = True
 					break ## selecting the first point and stop. don't select two points at the same time.
 			
-			for e in self.group.edges:
-				path = e.get_pixels_path()
-				if scrolled_x in path["x"] and scrolled_y in path["y"]:
-					e.selected = not e.selected
-					selected_something = True
-					break
+			if not selected_something:
+				for e in self.group.edges:
+					
+					##drawing a rectangle around the line
+					x_center = int((e.p1.x + e.p2.x) / 2)
+					y_center = int((e.p1.y + e.p2.y) / 2)
+					dist = np.sqrt( (e.p2.x - e.p1.x)**2 + (e.p2.y - e.p1.y)**2 )
+					dx = abs(e.p2.x - e.p2.y)
+					dy = abs(e.p2.y - e.p1.y)
+					horizental = int(dist/4) if dx>dy else int(dist/10)
+					vertical = int(dist/4) if dx<dy else int(dist/10)
+					##
+					
+					if scrolled_x in list(range(x_center-horizental, x_center+horizental)) and scrolled_y in list(range(y_center-vertical, y_center+vertical)):
+						e.selected = not e.selected
+						selected_something = True
+						break
 			
 			if not selected_something:
 				self.group.clear_selection()
@@ -273,35 +238,34 @@ class GUI:
 		mouse_movement_speed = 5
 		mouse_rotation_speed = 2
 		
-		if not self.mouse_lock:
-			if self.mouse_pressed["right"]: ## move the 3d world around
-				if abs(d_x) > mouse_movement_speed or abs(d_y) > mouse_movement_speed: ## updating every ${mouse_movement_speed}px
-					d_x = np.sign(d_x) * mouse_movement_speed ## limit the number
-					d_y = np.sign(d_y) * mouse_movement_speed
-					
-					self.last_mouse_pos["x"] = event.x
-					self.last_mouse_pos["y"] = event.y
-					
-					self.group.y_rotate(-d_x/100) ## it seems a - here and a + bottom works perfectly. nice.
-					self.group.x_rotate(+d_y/100)
-			
-			if self.mouse_pressed["middle"]: ## rotating the 3d world around z-axis
-				if abs(d_x) > mouse_rotation_speed or abs(d_y) > mouse_rotation_speed: ## updating every ${mouse_rotation_speed}px
-					d_x = np.sign(d_x) * mouse_rotation_speed ## limit the number
-					
-					self.last_mouse_pos["x"] = event.x
-													
-					self.group.z_rotate(-d_x/100)
-			
-			if self.mouse_pressed["left"]: ## panning the 3d world
-				if abs(d_x) > mouse_movement_speed or abs(d_y) > mouse_movement_speed: ## updating every ${mouse_movement_speed}px
-					d_x = np.sign(d_x) * mouse_movement_speed ## limit the number
-					d_y = np.sign(d_y) * mouse_movement_speed
-					
-					self.last_mouse_pos["x"] = event.x
-					self.last_mouse_pos["y"] = event.y
-					
-					self.group.set_pan(d_x, d_y)
+		if self.mouse_pressed["right"]: ## move the 3d world around
+			if abs(d_x) > mouse_movement_speed or abs(d_y) > mouse_movement_speed: ## updating every ${mouse_movement_speed}px
+				d_x = np.sign(d_x) * mouse_movement_speed ## limit the number
+				d_y = np.sign(d_y) * mouse_movement_speed
+				
+				self.last_mouse_pos["x"] = event.x
+				self.last_mouse_pos["y"] = event.y
+				
+				self.group.y_rotate(-d_x/100) ## it seems a - here and a + bottom works perfectly. nice.
+				self.group.x_rotate(+d_y/100)
+		
+		if self.mouse_pressed["middle"]: ## rotating the 3d world around z-axis
+			if abs(d_x) > mouse_rotation_speed or abs(d_y) > mouse_rotation_speed: ## updating every ${mouse_rotation_speed}px
+				d_x = np.sign(d_x) * mouse_rotation_speed ## limit the number
+				
+				self.last_mouse_pos["x"] = event.x
+												
+				self.group.z_rotate(-d_x/100)
+		
+		if self.mouse_pressed["left"]: ## panning the 3d world
+			if abs(d_x) > mouse_movement_speed or abs(d_y) > mouse_movement_speed: ## updating every ${mouse_movement_speed}px
+				d_x = np.sign(d_x) * mouse_movement_speed ## limit the number
+				d_y = np.sign(d_y) * mouse_movement_speed
+				
+				self.last_mouse_pos["x"] = event.x
+				self.last_mouse_pos["y"] = event.y
+				
+				self.group.set_pan(d_x, d_y)
 	
 	def key_commands(self, event):
 		# print(event)
@@ -310,6 +274,10 @@ class GUI:
 			for a in self.group.points+self.group.edges:
 				a.selected = self.select_all 
 		if event.char == "p": ## add a point
+			pass
+		if event.char == "c": ## chamfer line
+			pass
+		if event.char == "f": ## fillet line
 			pass
 		if event.char == "l": ## add a line when selecting two points
 			group_selected = self.group.get_selected()

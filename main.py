@@ -1,7 +1,8 @@
 from lib import *
 
 ###CAD:
-## chamfer and fillet on 3d
+## chamfer
+## fillet
 ## extrude points and lines.
 ## constraints: horizental, vertical...
 
@@ -29,4 +30,4 @@ gui.window.mainloop()
 
 
 ###TOFIX:
-## make the model rotate/move relative to its center. this is a problem when a model has been moved/panned (is not in the center) of the screen.
+## make the model rotate/move relative to mouse pos. this is a problem when a model has been moved/panned (is not in the center) of the screen.
