@@ -1,6 +1,7 @@
 from lib import *
 
 ###CAD:
+## add a point on a line
 ## chamfer
 ## fillet
 ## extrude points and lines.

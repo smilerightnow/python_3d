@@ -29,8 +29,28 @@ class Edge:
 		self.p2 = two_points[1]
 		self.selected = False
 	
-	def chamfer(self):
-		pass
+	def get_endpoints_coordinates(self):
+		return [self.p1.get_coordinates(), self.p2.get_coordinates()]
+	
+	def get_slope(self):
+		return (self.p2.y-self.p1.y) / (self.p2.x-self.p1.x) ## if two lines have the same slope => they are parallel
+	
+	def chamfer(self, current_group):
+		value = 10 ##will be modifiable with gui
+		
+		shared_edges = []
+		# shared_edges_coordinates = []
+		for edge in current_group.edges:
+			if edge.two_points == self.two_points: continue
+			if self.p1 in edge.two_points or self.p2 in edge.two_points:
+				shared_edges.append(edge)
+				# shared_edges_coordinates.append(edge.get_endpoints_coordinates())
+		
+		if len(shared_edges)>4:
+			print("only 4 shared edges allowed for chamfer")
+		
+		## I need to add 4 points. one on each shared edge.
+		
 	
 	def fillet(self):
 		pass
@@ -86,13 +106,19 @@ class Group:
 	def add_points(self, coor):
 		coor = []
 		for c in coor:
-			self.points.append(Point(c[0], c[1], c[2]))
+			if isinstance(c, Point):
+				self.points.append(c)
+			else:
+				self.points.append(Point(c[0], c[1], c[2]))
 	
 	def add_point(self, c):
-		self.points.append(Point(c[0], c[1], c[2]))
+		if isinstance(c, Point):
+			self.points.append(c)
+		else:
+			self.points.append(Point(c[0], c[1], c[2]))
 	
-	def add_point_p(self, p):
-		self.points.append(p)
+	# def add_point_p(self, p):
+		# self.points.append(p)
 	
 	def get_coordinates(self):
 		coor = []
@@ -110,7 +136,7 @@ class Group:
 				selected["edges"].append(e)
 		return selected
 	
-	def get_edges_points(self): ##endpoints of a line
+	def get_edges_points(self): ##endpoints of all lines: [[Point, Point],...]
 		p = []
 		for e in self.edges:
 			p.append(e.two_points)
@@ -275,14 +301,20 @@ class GUI:
 				a.selected = self.select_all 
 		if event.char == "p": ## add a point
 			pass
-		if event.char == "c": ## chamfer line
-			pass
 		if event.char == "f": ## fillet line
 			pass
+		
+		if event.char == "c": ## chamfer line
+			group_selected = self.group.get_selected()
+			if len(group_selected["edges"]) == 1:
+				group_selected["edges"][0].chamfer(self.group)
+			
+			# self.group.clear_selection()
+			
 		if event.char == "l": ## add a line when selecting two points
 			group_selected = self.group.get_selected()
 			current_edges = self.group.get_edges_points()
 			if len(group_selected["points"]) == 2:
-				if not group_selected["points"] in current_edges:
+				if not group_selected["points"] in current_edges: ## if it's not already a line.
 					self.group.edges.append(Edge(group_selected["points"]))
 			self.group.clear_selection()
