@@ -28,28 +28,26 @@ class Edge:
 		self.p1 = two_points[0]
 		self.p2 = two_points[1]
 		self.selected = False
-	
-	def get_endpoints_coordinates(self):
-		return [self.p1.get_coordinates(), self.p2.get_coordinates()]
-	
-	def get_slope(self):
-		return (self.p2.y-self.p1.y) / (self.p2.x-self.p1.x) ## if two lines have the same slope => they are parallel
-	
+
 	def chamfer(self, current_group):
-		value = 10 ##will be modifiable with gui
+		value = 0.3 ##will be modifiable with gui
 		
 		shared_edges = []
-		# shared_edges_coordinates = []
 		for edge in current_group.edges:
 			if edge.two_points == self.two_points: continue
 			if self.p1 in edge.two_points or self.p2 in edge.two_points:
 				shared_edges.append(edge)
-				# shared_edges_coordinates.append(edge.get_endpoints_coordinates())
 		
 		if len(shared_edges)>4:
 			print("only 4 shared edges allowed for chamfer")
 		
 		## I need to add 4 points. one on each shared edge.
+		for edge in shared_edges:
+			current_group.add_point([ ## adding a point on the same line
+				(edge.p2.x-edge.p1.x)*value+edge.p1.x,
+				(edge.p2.y-edge.p1.y)*value+edge.p1.y,
+				(edge.p2.z-edge.p1.z)*value+edge.p1.z
+			])
 		
 	
 	def fillet(self):
