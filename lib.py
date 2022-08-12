@@ -1,6 +1,8 @@
 import numpy as np
 import tkinter as tk
 
+def distance_between_two_points(p1, p2):
+	return np.sqrt((p1[0]-p2[0])**2+(p1[1]-p2[1])**2+(p1[2]-p2[2])**2)
 
 class Point:
 	def __init__(self, x=0, y=0, z=0):
@@ -32,23 +34,31 @@ class Edge:
 	def chamfer(self, current_group):
 		value = 0.3 ##will be modifiable with gui
 		
-		shared_edges = []
+		shared_edges_A = []
+		shared_edges_B = []
 		for edge in current_group.edges:
 			if edge.two_points == self.two_points: continue
-			if self.p1 in edge.two_points or self.p2 in edge.two_points:
-				shared_edges.append(edge)
+			if self.p1 in edge.two_points:
+				shared_edges_A.append(edge)
+			if self.p2 in edge.two_points:
+				shared_edges_B.append(edge)
 		
-		if len(shared_edges)>4:
+		if len(shared_edges_A)>2 or len(shared_edges_B)>2:
 			print("only 4 shared edges allowed for chamfer")
 		
 		## I need to add 4 points. one on each shared edge.
-		for edge in shared_edges:
-			current_group.add_point([ ## adding a point on the same line
-				(edge.p2.x-edge.p1.x)*value+edge.p1.x,
-				(edge.p2.y-edge.p1.y)*value+edge.p1.y,
-				(edge.p2.z-edge.p1.z)*value+edge.p1.z
-			])
-		
+		for edge in shared_edges_A:
+			if distance_between_two_points(self.p1.get_coordinates(), [(edge.p2.x-edge.p1.x)*value+edge.p1.x,(edge.p2.y-edge.p1.y)*value+edge.p1.y,(edge.p2.z-edge.p1.z)*value+edge.p1.z]) < distance_between_two_points(self.p1.get_coordinates(), [(edge.p1.x-edge.p2.x)*value+edge.p2.x,(edge.p1.y-edge.p2.y)*value+edge.p2.y,(edge.p1.z-edge.p2.z)*value+edge.p2.z]):
+				current_group.add_point([(edge.p2.x-edge.p1.x)*value+edge.p1.x,(edge.p2.y-edge.p1.y)*value+edge.p1.y,(edge.p2.z-edge.p1.z)*value+edge.p1.z])
+			else:
+				current_group.add_point([(edge.p1.x-edge.p2.x)*value+edge.p2.x,(edge.p1.y-edge.p2.y)*value+edge.p2.y,(edge.p1.z-edge.p2.z)*value+edge.p2.z])
+
+		for edge in shared_edges_B:
+			if distance_between_two_points(self.p2.get_coordinates(), [(edge.p2.x-edge.p1.x)*value+edge.p1.x,(edge.p2.y-edge.p1.y)*value+edge.p1.y,(edge.p2.z-edge.p1.z)*value+edge.p1.z]) < distance_between_two_points(self.p2.get_coordinates(), [(edge.p1.x-edge.p2.x)*value+edge.p2.x,(edge.p1.y-edge.p2.y)*value+edge.p2.y,(edge.p1.z-edge.p2.z)*value+edge.p2.z]):
+				current_group.add_point([(edge.p2.x-edge.p1.x)*value+edge.p1.x,(edge.p2.y-edge.p1.y)*value+edge.p1.y,(edge.p2.z-edge.p1.z)*value+edge.p1.z])
+			else:
+				current_group.add_point([(edge.p1.x-edge.p2.x)*value+edge.p2.x,(edge.p1.y-edge.p2.y)*value+edge.p2.y,(edge.p1.z-edge.p2.z)*value+edge.p2.z])
+		## I did two loops and comparing distance to place the 4 points in the correct position. maybe there's a better way.
 	
 	def fillet(self):
 		pass
