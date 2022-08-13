@@ -1,8 +1,9 @@
 from lib import *
 
 ###CAD:
-## fillet
 ## add top view, side view...etc
+## add a point to the 3d world
+## fillet
 ## extrude points and lines.
 ## constraints: horizental, vertical...
 
