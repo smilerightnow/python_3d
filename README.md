@@ -8,6 +8,7 @@ a simple 3d rendering library + simple CAD
 + Selectable points and lines.
 + Points can be linked with a line.
 + Simplifying the code as much as possible. Currently, using only tkinter+numpy.
++ Selected line can be chamfered.
 
 ## TODO:
 
