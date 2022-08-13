@@ -338,7 +338,7 @@ class GUI:
 			if len(group_selected["edges"]) == 1:
 				group_selected["edges"][0].chamfer(self.group)
 			
-			# self.group.clear_selection()
+			self.group.clear_selection()
 			
 		if event.char == "l": ## add a line when selecting two points
 			group_selected = self.group.get_selected()
