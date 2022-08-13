@@ -31,4 +31,4 @@ gui.window.mainloop()
 
 ###TOFIX:
 ## make the model rotate/move relative to mouse pos. this is a problem when a model has been moved/panned (is not in the center) of the screen.
-## chamfered edges are not stable to chamfer again.
+## chamfered edges are not stable to chamfer again and can break the program.
