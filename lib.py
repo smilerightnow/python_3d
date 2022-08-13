@@ -34,31 +34,28 @@ class Edge:
 	def chamfer(self, current_group):
 		value = 0.3 ##will be modifiable with gui
 		
-		shared_edges_A = []
-		shared_edges_B = []
+		shared_edges = []
 		for edge in current_group.edges:
 			if edge.two_points == self.two_points: continue
-			if self.p1 in edge.two_points:
-				shared_edges_A.append(edge)
-			if self.p2 in edge.two_points:
-				shared_edges_B.append(edge)
+			if self.p1 in edge.two_points or self.p2 in edge.two_points:
+				shared_edges.append(edge)
 		
-		if len(shared_edges_A)>2 or len(shared_edges_B)>2:
+		if len(shared_edges)>4:
 			print("only 4 shared edges allowed for chamfer")
 		
 		## I need to add 4 points. one on each shared edge.
-		for edge in shared_edges_A:
-			if distance_between_two_points(self.p1.get_coordinates(), [(edge.p2.x-edge.p1.x)*value+edge.p1.x,(edge.p2.y-edge.p1.y)*value+edge.p1.y,(edge.p2.z-edge.p1.z)*value+edge.p1.z]) < distance_between_two_points(self.p1.get_coordinates(), [(edge.p1.x-edge.p2.x)*value+edge.p2.x,(edge.p1.y-edge.p2.y)*value+edge.p2.y,(edge.p1.z-edge.p2.z)*value+edge.p2.z]):
-				current_group.add_point([(edge.p2.x-edge.p1.x)*value+edge.p1.x,(edge.p2.y-edge.p1.y)*value+edge.p1.y,(edge.p2.z-edge.p1.z)*value+edge.p1.z])
+		for edge in shared_edges:
+			if distance_between_two_points(self.p1.get_coordinates(), [(edge.p2.x-edge.p1.x)*value+edge.p1.x,(edge.p2.y-edge.p1.y)*value+edge.p1.y,(edge.p2.z-edge.p1.z)*value+edge.p1.z]) < distance_between_two_points(self.p1.get_coordinates(), [(edge.p1.x-edge.p2.x)*value+edge.p2.x,(edge.p1.y-edge.p2.y)*value+edge.p2.y,(edge.p1.z-edge.p2.z)*value+edge.p2.z]) or distance_between_two_points(self.p2.get_coordinates(), [(edge.p2.x-edge.p1.x)*value+edge.p1.x,(edge.p2.y-edge.p1.y)*value+edge.p1.y,(edge.p2.z-edge.p1.z)*value+edge.p1.z]) < distance_between_two_points(self.p2.get_coordinates(), [(edge.p1.x-edge.p2.x)*value+edge.p2.x,(edge.p1.y-edge.p2.y)*value+edge.p2.y,(edge.p1.z-edge.p2.z)*value+edge.p2.z]): ##comparing the distance to place the new points in the nearest place to the selected edge points.
+				
+				new_p = [(edge.p2.x-edge.p1.x)*value+edge.p1.x,(edge.p2.y-edge.p1.y)*value+edge.p1.y,(edge.p2.z-edge.p1.z)*value+edge.p1.z]
+				current_group.add_point(new_p)
 			else:
-				current_group.add_point([(edge.p1.x-edge.p2.x)*value+edge.p2.x,(edge.p1.y-edge.p2.y)*value+edge.p2.y,(edge.p1.z-edge.p2.z)*value+edge.p2.z])
-
-		for edge in shared_edges_B:
-			if distance_between_two_points(self.p2.get_coordinates(), [(edge.p2.x-edge.p1.x)*value+edge.p1.x,(edge.p2.y-edge.p1.y)*value+edge.p1.y,(edge.p2.z-edge.p1.z)*value+edge.p1.z]) < distance_between_two_points(self.p2.get_coordinates(), [(edge.p1.x-edge.p2.x)*value+edge.p2.x,(edge.p1.y-edge.p2.y)*value+edge.p2.y,(edge.p1.z-edge.p2.z)*value+edge.p2.z]):
-				current_group.add_point([(edge.p2.x-edge.p1.x)*value+edge.p1.x,(edge.p2.y-edge.p1.y)*value+edge.p1.y,(edge.p2.z-edge.p1.z)*value+edge.p1.z])
-			else:
-				current_group.add_point([(edge.p1.x-edge.p2.x)*value+edge.p2.x,(edge.p1.y-edge.p2.y)*value+edge.p2.y,(edge.p1.z-edge.p2.z)*value+edge.p2.z])
-		## I did two loops and comparing distance to place the 4 points in the correct position. maybe there's a better way.
+				new_p = [(edge.p1.x-edge.p2.x)*value+edge.p2.x,(edge.p1.y-edge.p2.y)*value+edge.p2.y,(edge.p1.z-edge.p2.z)*value+edge.p2.z]
+				current_group.add_point(new_p)
+		
+		# current_group.points.remove(self.p1)
+		# current_group.points.remove(self.p2)
+		# current_group.edges.remove(self)
 	
 	def fillet(self):
 		pass
