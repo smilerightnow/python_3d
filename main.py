@@ -3,6 +3,7 @@ from lib import *
 ###CAD:
 ## chamfer
 ## fillet
+## add top view, side view...etc
 ## extrude points and lines.
 ## constraints: horizental, vertical...
 
