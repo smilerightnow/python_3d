@@ -44,18 +44,34 @@ class Edge:
 			print("only 4 shared edges allowed for chamfer")
 		
 		## I need to add 4 points. one on each shared edge.
+		a,b = [],[]
 		for edge in shared_edges:
+			new_p = []
 			if distance_between_two_points(self.p1.get_coordinates(), [(edge.p2.x-edge.p1.x)*value+edge.p1.x,(edge.p2.y-edge.p1.y)*value+edge.p1.y,(edge.p2.z-edge.p1.z)*value+edge.p1.z]) < distance_between_two_points(self.p1.get_coordinates(), [(edge.p1.x-edge.p2.x)*value+edge.p2.x,(edge.p1.y-edge.p2.y)*value+edge.p2.y,(edge.p1.z-edge.p2.z)*value+edge.p2.z]) or distance_between_two_points(self.p2.get_coordinates(), [(edge.p2.x-edge.p1.x)*value+edge.p1.x,(edge.p2.y-edge.p1.y)*value+edge.p1.y,(edge.p2.z-edge.p1.z)*value+edge.p1.z]) < distance_between_two_points(self.p2.get_coordinates(), [(edge.p1.x-edge.p2.x)*value+edge.p2.x,(edge.p1.y-edge.p2.y)*value+edge.p2.y,(edge.p1.z-edge.p2.z)*value+edge.p2.z]): ##comparing the distance to place the new points in the nearest place to the selected edge points.
 				
 				new_p = [(edge.p2.x-edge.p1.x)*value+edge.p1.x,(edge.p2.y-edge.p1.y)*value+edge.p1.y,(edge.p2.z-edge.p1.z)*value+edge.p1.z]
 				current_group.add_point(new_p)
+				a.append(new_p)
 			else:
 				new_p = [(edge.p1.x-edge.p2.x)*value+edge.p2.x,(edge.p1.y-edge.p2.y)*value+edge.p2.y,(edge.p1.z-edge.p2.z)*value+edge.p2.z]
 				current_group.add_point(new_p)
+				b.append(new_p)
+			
+			##conneting the new points with old points
+			if self.p1 is edge.p1 or self.p2 is edge.p1: edge.p1 = current_group.get_point_index(new_p)
+			if self.p1 is edge.p2 or self.p2 is edge.p2: edge.p2 = current_group.get_point_index(new_p)
 		
-		# current_group.points.remove(self.p1)
-		# current_group.points.remove(self.p2)
-		# current_group.edges.remove(self)
+		##connecting the new points to each other
+		current_group.edges.append(Edge([current_group.get_point_index(a[0]), current_group.get_point_index(a[1])]))
+		current_group.edges.append(Edge([current_group.get_point_index(b[0]), current_group.get_point_index(b[1])]))
+		
+		current_group.edges.append(Edge([current_group.get_point_index(a[0]), current_group.get_point_index(b[1])]))
+		current_group.edges.append(Edge([current_group.get_point_index(b[0]), current_group.get_point_index(a[1])]))
+		
+		##removing the selected line and points
+		current_group.points.remove(self.p1)
+		current_group.points.remove(self.p2)
+		current_group.edges.remove(self)
 	
 	def fillet(self):
 		pass
@@ -122,8 +138,10 @@ class Group:
 		else:
 			self.points.append(Point(c[0], c[1], c[2]))
 	
-	# def add_point_p(self, p):
-		# self.points.append(p)
+	def get_point_index(self, coor):
+		for p in self.points:
+			if coor == p.get_coordinates():
+				return p
 	
 	def get_coordinates(self):
 		coor = []
